@@ -1,6 +1,7 @@
-#include "OpenGLWidget.hpp"
+#include "Engine/OpenGLWidget.hpp"
 #include <QMatrix4x4>
 #include <QOpenGLShaderProgram>
+#include <QDebug>
 #include <cmath>
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
@@ -14,6 +15,7 @@ OpenGLWidget::~OpenGLWidget() {}
 
 void OpenGLWidget::initializeGL()
 {
+    qDebug() << "OpenGL initialized";
     initializeOpenGLFunctions();
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -26,6 +28,9 @@ void OpenGLWidget::resizeGL(int w, int h)
 
 void OpenGLWidget::paintGL()
 {
+
+    qDebug() << "Painting...";
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);

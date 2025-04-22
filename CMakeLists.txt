@@ -22,14 +22,37 @@ include_directories(
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 file(GLOB_RECURSE UIS CONFIGURE_DEPENDS src/UI/*.ui)
 
+
+if (MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-subsystem,console")
+endif()
+
 # Exécutable
 add_executable(${PROJECT_NAME}
     ${SOURCES}
-    ${UIS}  # Obligatoire pour que AUTOUIC les traite
+    ${UIS}  
 )
 
+#SD2 manual
+find_path(SDL2_INCLUDE_DIR SDL.h PATH_SUFFIXES SDL2)
+find_library(SDL2_LIBRARY NAMES SDL2)
+
+if(NOT SDL2_INCLUDE_DIR OR NOT SDL2_LIBRARY)
+    message(FATAL_ERROR "SDL2 not found")
+endif()
+
+find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h PATH_SUFFIXES SDL2)
+find_library(SDL2_IMAGE_LIBRARY NAMES SDL2_image)
+
+
+
 target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
     ${CMAKE_CURRENT_BINARY_DIR}/Better_Dwarf_Fortress_autogen/include
+    ${SDL2_INCLUDE_DIRS}
+    ${SDL2_IMAGE_INCLUDE_DIR}
 )
 
 # Link Qt
@@ -37,5 +60,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt6::Widgets
     Qt6::OpenGL
     Qt6::OpenGLWidgets
+    ${SDL2_LIBRARY}
+    ${SDL2_IMAGE_LIBRARY}
     opengl32
 )
