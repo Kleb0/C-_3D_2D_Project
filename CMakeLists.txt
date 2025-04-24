@@ -16,11 +16,18 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
+    ${CMAKE_CURRENT_BINARY_DIR}/src/AbstractClass
+    ${SDL2_INCLUDE_DIRS}
+    ${SDL2_IMAGE_INCLUDE_DIR}
 )
 
 # Sources et UI
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS src/*.hpp)
 file(GLOB_RECURSE UIS CONFIGURE_DEPENDS src/UI/*.ui)
+
 
 
 if (MINGW)
@@ -30,6 +37,7 @@ endif()
 # Exécutable
 add_executable(${PROJECT_NAME}
     ${SOURCES}
+    ${HEADERS}
     ${UIS}  
 )
 
@@ -44,12 +52,16 @@ endif()
 find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h PATH_SUFFIXES SDL2)
 find_library(SDL2_IMAGE_LIBRARY NAMES SDL2_image)
 
+find_package(OpenGL REQUIRED)  
+find_library(GLU_LIBRARY NAMES GLU glu32)
+
 
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UI
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/AbstractClass
     ${CMAKE_CURRENT_BINARY_DIR}/Better_Dwarf_Fortress_autogen/include
     ${SDL2_INCLUDE_DIRS}
     ${SDL2_IMAGE_INCLUDE_DIR}
@@ -62,5 +74,8 @@ target_link_libraries(${PROJECT_NAME}
     Qt6::OpenGLWidgets
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARY}
-    opengl32
+    OpenGL::GL
+    ${GLU_LIBRARY}
 )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC_MACRO_NAMES "Q_OBJECT")

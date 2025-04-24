@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1526</width>
+    <height>910</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>1231</width>
+      <height>821</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QWidget" name="MainWidget" native="true">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="Base">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+          <colorrole role="Window">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="Base">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+          <colorrole role="Window">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="Base">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+          <colorrole role="Window">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QSlider::groove:vertical {
+    background: white;
+    border: 1px solid #999999;
+    width: 8px;
+    margin: 0px 0;
+    border-radius: 4px;
+}
+
+QSlider::handle:vertical {
+    background: #448aff;
+    border: 1px solid #5c5c5c;
+    height: 16px;
+    margin: 2px -2px;
+    border-radius: 4px;
+}
+
+QSlider::sub-page:vertical {
+    background: white;
+    border-radius: 4px;
+}
+
+QSlider::add-page:vertical {
+    background: #448aff;
+    border-radius: 4px;
+}
+</string>
+       </property>
+       <widget class="ThreeDWorldView" name="openGLWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>851</width>
+          <height>791</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QSlider" name="verticalSlider">
+        <property name="geometry">
+         <rect>
+          <x>950</x>
+          <y>340</y>
+          <width>16</width>
+          <height>160</height>
+         </rect>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>222</red>
+              <green>222</green>
+              <blue>222</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>222</red>
+              <green>222</green>
+              <blue>222</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+       <widget class="QSlider" name="verticalSlider_2">
+        <property name="geometry">
+         <rect>
+          <x>980</x>
+          <y>340</y>
+          <width>16</width>
+          <height>160</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QSlider::groove:vertical {
+    background: white;
+    border: 1px solid #999999;
+    width: 8px;
+    margin: 0px 0;
+    border-radius: 4px;
+}
+
+QSlider::handle:vertical {
+    background: #448aff;
+    border: 1px solid #5c5c5c;
+    height: 16px;
+    margin: 2px -2px;
+    border-radius: 4px;
+}
+
+QSlider::sub-page:vertical {
+    background: white;
+    border-radius: 4px;
+}
+
+QSlider::add-page:vertical {
+    background: #448aff;
+    border-radius: 4px;
+}
+</string>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1526</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu3DWorldView">
+    <property name="title">
+     <string>3DWorldView</string>
+    </property>
+   </widget>
+   <addaction name="menu3DWorldView"/>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ThreeDWorldView</class>
+   <extends>QOpenGLWidget</extends>
+   <header>ThreeDWorldView.hpp</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
