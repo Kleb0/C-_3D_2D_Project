@@ -1,3 +1,0 @@
-C:\msys64\mingw64\bin\cmake.exe -E rm -f CMakeFiles\Better_Dwarf_Fortress.dir/objects.a
-C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\Better_Dwarf_Fortress.dir/objects.a @CMakeFiles\Better_Dwarf_Fortress.dir\objects1.rsp
-C:\msys64\mingw64\bin\g++.exe -g  -Wl,-subsystem,console -Wl,--whole-archive CMakeFiles\Better_Dwarf_Fortress.dir/objects.a -Wl,--no-whole-archive -o Better_Dwarf_Fortress.exe -Wl,--out-implib,libBetter_Dwarf_Fortress.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Better_Dwarf_Fortress.dir\linkLibs.rsp
