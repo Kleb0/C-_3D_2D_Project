@@ -5,18 +5,15 @@
         "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
         "intelliSenseMode": "gcc-x64",
         "includePath": [
+          "${workspaceFolder}/src/ThirdParty",
+          "${workspaceFolder}/src/ThirdParty/imgui",
           "${workspaceFolder}/src",
           "${workspaceFolder}/src/UI",
           "${workspaceFolder}/src/Engine",
           "${workspaceFolder}/build/Better_Dwarf_Fortress_autogen/include",
           "C:/msys64/mingw64/include",
-          "C:/msys64/mingw64/include/SDL2",
-          "C:/msys64/mingw64/include/qt6",
-          "C:/msys64/mingw64/include/qt6/QtWidgets",
-          "C:/msys64/mingw64/include/qt6/QtCore",
-          "C:/msys64/mingw64/include/qt6/QtGui",
-          "C:/msys64/mingw64/include/qt6/QtOpenGL",
-          "C:/msys64/mingw64/include/qt6/QtOpenGLWidgets"
+          "C:/msys64/mingw64/include/SDL2"
+
 
         ],
         "cppStandard": "c++17",

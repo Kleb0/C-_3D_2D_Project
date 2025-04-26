@@ -1,22 +1,23 @@
 #pragma once
 
-#include <QMainWindow>
+#include <GLFW/glfw3.h>
+#include "Engine/ThreeDSceneDrawer.hpp"
 
-QT_BEGIN_NAMESPACE
-namespace Ui
+class GameWindow
 {
-    class MainWindow;
-}
-QT_END_NAMESPACE
-
-class GameWindow : public QMainWindow
-{
-    Q_OBJECT
-
 public:
-    GameWindow(QWidget *parent = nullptr);
+    GameWindow(int width, int height, const char *title);
     ~GameWindow();
 
+    void run();
+
 private:
-    Ui::MainWindow *ui;
+    GLFWwindow *window;
+    ThreeDSceneDrawer scene;
+
+    void initGLFW(int width, int height, const char *title);
+    void initImGui();
+    void shutdown();
+
+    void renderViewport();
 };

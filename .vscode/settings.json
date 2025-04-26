@@ -29,6 +29,7 @@
   "files.associations": {
     "*.embeddedhtml": "html",
     "iostream": "cpp",
-    "new": "cpp"
+    "new": "cpp",
+    "filesystem": "cpp"
   }
 }

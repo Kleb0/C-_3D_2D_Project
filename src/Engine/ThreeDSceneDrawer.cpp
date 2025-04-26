@@ -1,13 +1,57 @@
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Engine/ThreeDSceneDrawer.hpp"
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include "Engine/TwoDComponent.hpp"
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
+unsigned int gridVAO = 0, gridVBO = 0;
+unsigned int shaderProgram = 0;
 TwoDComponent *imageComponent = nullptr;
 
+const char *vertexShaderSource = R"(
+#version 330 core
+layout(location = 0) in vec3 aPos;
+uniform mat4 viewProj;
+void main()
+{
+    gl_Position = viewProj * vec4(aPos, 1.0);
+}
+)";
+
+const char *fragmentShaderSource = R"(
+#version 330 core
+out vec4 FragColor;
+void main()
+{
+    FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+}
+)";
+
 ThreeDSceneDrawer::ThreeDSceneDrawer() {}
+
+void compileShaders()
+{
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+    glCompileShader(vertexShader);
+
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+    glCompileShader(fragmentShader);
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+}
 
 void ThreeDSceneDrawer::initialization()
 {
@@ -18,69 +62,59 @@ void ThreeDSceneDrawer::initialization()
     std::cout << "[DEBUG] Chemin construit : " << imagePath << std::endl;
 
     imageComponent = new TwoDComponent(imagePath);
+
+    compileShaders();
+
+    std::vector<float> gridVertices;
+    for (int i = 0; i <= 5; ++i)
+    {
+        gridVertices.insert(gridVertices.end(), {0.0f, 0.0f, (float)i, 5.0f, 0.0f, (float)i});
+        gridVertices.insert(gridVertices.end(), {(float)i, 0.0f, 0.0f, (float)i, 0.0f, 5.0f});
+    }
+
+    glGenVertexArrays(1, &gridVAO);
+    glGenBuffers(1, &gridVBO);
+
+    glBindVertexArray(gridVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    glBufferData(GL_ARRAY_BUFFER, gridVertices.size() * sizeof(float), gridVertices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }
 
 void ThreeDSceneDrawer::render()
 {
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_DEPTH_TEST);
     drawBackgroundGradient();
     glEnable(GL_DEPTH_TEST);
 
-    glLoadIdentity();
-    gluLookAt(5, 10, 10, 2.5, 0, 2.5, 0, 1, 0);
-    drawGrid();
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(5.0f, 10.0f, 10.0f),
+        glm::vec3(2.5f, 0.0f, 2.5f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+    glm::mat4 viewProj = proj * view;
+
+    glUseProgram(shaderProgram);
+    unsigned int viewProjLoc = glGetUniformLocation(shaderProgram, "viewProj");
+    glUniformMatrix4fv(viewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
+
+    glBindVertexArray(gridVAO);
+    glDrawArrays(GL_LINES, 0, 24);
+    glBindVertexArray(0);
 
     if (imageComponent)
-    {
         imageComponent->render();
-    }
     else
-    {
         std::cerr << "Image component not initialized." << std::endl;
-    }
-}
-
-void ThreeDSceneDrawer::drawGrid()
-{
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glBegin(GL_LINES);
-    for (int i = 0; i <= 5; ++i)
-    {
-        glVertex3f(0, 0, i);
-        glVertex3f(5, 0, i);
-        glVertex3f(i, 0, 0);
-        glVertex3f(i, 0, 5);
-    }
-    glEnd();
 }
 
 void ThreeDSceneDrawer::drawBackgroundGradient()
 {
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(-1, 1, -1, 1, -1, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glBegin(GL_QUADS);
-
-    glColor3f(0.05f, 0.05f, 0.05f);
-    glVertex2f(-1.0f, 1.0f);
-    glVertex2f(1.0f, 1.0f);
-
-    glColor3f(0.2f, 0.2f, 0.2f);
-    glVertex2f(1.0f, -1.0f);
-    glVertex2f(-1.0f, -1.0f);
-    glEnd();
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 }

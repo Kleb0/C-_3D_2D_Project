@@ -1,21 +1,25 @@
 #pragma once
 
-#include <QOpenGLWidget>
-#include <QOpenGLFunctions>
+#include <glad/glad.h>
 #include "Engine/ThreeDSceneDrawer.hpp"
 
-class ThreeDWorldView : public QOpenGLWidget, protected QOpenGLFunctions
+class ThreeDWorldView
 {
-    Q_OBJECT
-
 public:
-    explicit ThreeDWorldView(QWidget *parent = nullptr);
+    ThreeDWorldView();
+    ~ThreeDWorldView() = default;
 
-protected:
-    void initializeGL() override;
-    void resizeGL(int w, int h) override;
-    void paintGL() override;
+    void initialize();
+    void resize(int w, int h);
+    void render();
+    GLuint getTexture() const { return fboTexture; }
 
 private:
+    GLuint fbo = 0;
+    GLuint fboTexture = 0;
+    GLuint rbo = 0;
+    int width = 800;
+    int height = 600;
+
     ThreeDSceneDrawer scene;
 };
