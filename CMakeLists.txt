@@ -11,6 +11,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
     ${CMAKE_CURRENT_SOURCE_DIR}/src/AbstractClass
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/images
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/InternalLogic
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/WorldComp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/glad
     ${SDL2_INCLUDE_DIRS}
@@ -75,6 +77,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UI
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Engine
     ${CMAKE_CURRENT_SOURCE_DIR}/src/AbstractClass
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/InternalLogic
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/WorldComp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui/backends
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/glad/include  
