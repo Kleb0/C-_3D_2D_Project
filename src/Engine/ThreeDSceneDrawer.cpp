@@ -4,14 +4,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Engine/ThreeDSceneDrawer.hpp"
-#include "Engine/TwoDComponent.hpp"
 #include <iostream>
 #include <filesystem>
 #include <vector>
 
 unsigned int gridVAO = 0, gridVBO = 0;
 unsigned int shaderProgram = 0;
-TwoDComponent *imageComponent = nullptr;
 
 const char *vertexShaderSource = R"(
 #version 330 core
@@ -61,8 +59,6 @@ void ThreeDSceneDrawer::initialization()
     std::cout << "[DEBUG] Répertoire courant : " << std::filesystem::current_path() << std::endl;
     std::cout << "[DEBUG] Chemin construit : " << imagePath << std::endl;
 
-    imageComponent = new TwoDComponent(imagePath);
-
     compileShaders();
 
     std::vector<float> gridVertices;
@@ -83,6 +79,12 @@ void ThreeDSceneDrawer::initialization()
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);
+}
+
+void ThreeDSceneDrawer::add(ThreeDObject &object)
+{
+    object.initialize();
+    objects.push_back(&object);
 }
 
 void ThreeDSceneDrawer::render()
@@ -108,10 +110,10 @@ void ThreeDSceneDrawer::render()
     glDrawArrays(GL_LINES, 0, 24);
     glBindVertexArray(0);
 
-    if (imageComponent)
-        imageComponent->render();
-    else
-        std::cerr << "Image component not initialized." << std::endl;
+    for (auto *obj : objects)
+    {
+        obj->render(viewProj);
+    }
 }
 
 void ThreeDSceneDrawer::drawBackgroundGradient()

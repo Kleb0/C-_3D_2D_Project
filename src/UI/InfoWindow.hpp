@@ -4,15 +4,15 @@
 #include "imgui.h"
 #include <string>
 
-class NewWindow : public GUIWindow
+class InfoWindow : public GUIWindow
 {
 public:
     std::string title = "Hello Window";
     std::string text = "Bienvenue dans la première fenêtre !";
 
-    NewWindow() = default;
+    InfoWindow() = default;
 
-    NewWindow(const std::string &title, const std::string &text)
+    InfoWindow(const std::string &title, const std::string &text)
         : title(title), text(text)
     {
     }

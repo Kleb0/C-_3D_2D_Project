@@ -1,13 +1,18 @@
 #pragma once
 
+#include <vector>
+#include "WorldObjects/ThreedObject.hpp"
+
 class ThreeDSceneDrawer
 {
 public:
     ThreeDSceneDrawer();
     void render();
     void initialization();
+    void drawBackgroundGradient();
+    void drawGrid();
+    void add(ThreeDObject &object);
 
 private:
-    void drawGrid();
-    void drawBackgroundGradient();
+    std::vector<ThreeDObject *> objects;
 };
