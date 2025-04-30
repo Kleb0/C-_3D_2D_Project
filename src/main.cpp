@@ -1,20 +1,30 @@
 #define SDL_MAIN_HANDLED
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <SDL2/SDL.h>
 #include "UI/MainSoftwareGUI.hpp"
 #include "UI/InfoWindow.hpp"
 #include "UI/ThreeDWindow.hpp"
 #include "WorldObjects/ThreedObject.hpp"
 #include "InternalLogic/AssemblerLogic.hpp"
 #include "Engine/OpenGLContext.hpp"
+#include "Engine/ImGuiGizmo.hpp"
+#include "Engine/ThreeDObjectSelector.hpp"
 
 int main()
 {
     MainSoftwareGUI gui(1280, 720, "Main GUI");
     InfoWindow myInfoWindow;
     ThreeDWindow myThreeDWindow;
-    OpenGLContext Renderer;
+    OpenGLContext renderer;
     ThreeDObject myCube;
+    ThreeDObjectSelector selector;
+
+    myThreeDWindow.glfwWindow = gui.getWindow();
 
     myInfoWindow.title = "Hello Window 1";
     myInfoWindow.text = "Bienvenue dans la première fenêtre ! C'est une belle fenêtre !";
@@ -23,8 +33,11 @@ int main()
 
     add(gui, myInfoWindow);
     add(gui, myThreeDWindow);
-    add(myThreeDWindow, Renderer);
-    add(Renderer, myCube);
+
+    myCube.setPosition(glm::vec3(2.5f, 0.5f, 2.5f));
+    add(myThreeDWindow, myCube);
+    add(myThreeDWindow, renderer);
+    add(renderer, myCube);
 
     gui.run();
 }

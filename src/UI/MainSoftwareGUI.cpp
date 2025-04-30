@@ -7,6 +7,11 @@
 #include "Engine/SceneWidgetLinker.hpp"
 #include <iostream>
 
+GLFWwindow *MainSoftwareGUI::getWindow()
+{
+    return window;
+}
+
 MainSoftwareGUI &MainSoftwareGUI::add(GUIWindow &window)
 {
     windows.push_back(&window);
@@ -23,7 +28,6 @@ MainSoftwareGUI::~MainSoftwareGUI()
 {
     shutdown();
 }
-
 void MainSoftwareGUI::initGLFW(int width, int height, const char *title)
 {
     if (!glfwInit())
@@ -71,7 +75,7 @@ void MainSoftwareGUI::run()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // 🔥 RENDRE TOUTES LES FENÊTRES AJOUTÉES
+        // RENDRE TOUTES LES FENÊTRES AJOUTÉES
         for (auto *win : windows)
         {
             if (win)

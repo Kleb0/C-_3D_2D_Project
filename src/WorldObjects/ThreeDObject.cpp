@@ -17,7 +17,7 @@ void main()
 const char *cubeFragmentShaderSource = R"(
 #version 330 core
 layout(location = 0) out vec4 FragColor;
-unfiorm vec4 color;
+uniform vec4 color;
 void main()
 {
     FragColor = vec4(0.3, 0.7, 0.9, 1.0);
@@ -117,7 +117,12 @@ void ThreeDObject::initialize()
 
 void ThreeDObject::render(const glm::mat4 &viewProj)
 {
+    modelMatrix = glm::translate(glm::mat4(1.0f), position);
+
     glUseProgram(shaderProgram);
+
+    unsigned int colorLoc = glGetUniformLocation(shaderProgram, "color");
+    glUniform4f(colorLoc, 0.3f, 0.7f, 0.9f, 1.0f);
 
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int viewProjLoc = glGetUniformLocation(shaderProgram, "viewProj");
