@@ -1,6 +1,7 @@
 #include <glad/glad.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-#include "Engine/OpenGlContext.hpp"
+#include "Engine/OpenGLContext.hpp"
 
 OpenGLContext::OpenGLContext()
 {
@@ -20,7 +21,7 @@ OpenGLContext::OpenGLContext()
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cerr << "Erreur : Framebuffer incomplet !" << std::endl;
+        std::cerr << "[OpenGLContext] ERROR : uncompleted Framebuffer !" << std::endl;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -57,6 +58,13 @@ void OpenGLContext::render()
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    viewMatrix = glm::lookAt(
+        glm::vec3(5.0f, 10.0f, 10.0f),
+        glm::vec3(2.5f, 0.0f, 2.5f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+
+    projMatrix = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 
     scene.render();
 

@@ -20,7 +20,7 @@ layout(location = 0) out vec4 FragColor;
 uniform vec4 color;
 void main()
 {
-    FragColor = vec4(0.3, 0.7, 0.9, 1.0);
+    FragColor = color;
 }
 )";
 
@@ -122,7 +122,7 @@ void ThreeDObject::render(const glm::mat4 &viewProj)
     glUseProgram(shaderProgram);
 
     unsigned int colorLoc = glGetUniformLocation(shaderProgram, "color");
-    glUniform4f(colorLoc, 0.3f, 0.7f, 0.9f, 1.0f);
+    glUniform4f(colorLoc, 0.3f, 0.7f, 0.9f, 0.3f);
 
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int viewProjLoc = glGetUniformLocation(shaderProgram, "viewProj");
@@ -130,7 +130,13 @@ void ThreeDObject::render(const glm::mat4 &viewProj)
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
     glUniformMatrix4fv(viewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
+
+    glDepthMask(GL_TRUE);
 }

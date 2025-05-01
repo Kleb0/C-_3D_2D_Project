@@ -68,6 +68,12 @@ void ThreeDWindow::render()
         }
 
         updateGizmo();
+
+        if (selector.getSelectedObject())
+        {
+            gizmo.render(view, proj);
+        }
+
         ImGui::EndChild();
     }
 
@@ -97,18 +103,23 @@ void ThreeDWindow::handleClick()
         int windowWidth = openGLContext->getWidth();
         int windowHeight = openGLContext->getHeight();
 
-        glm::mat4 view = glm::lookAt(
+        view = glm::lookAt(
             glm::vec3(5.0f, 10.0f, 10.0f),
             glm::vec3(2.5f, 0.0f, 2.5f),
             glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f),
-                                          (float)windowWidth / (float)windowHeight,
-                                          0.1f, 100.0f);
+
+        proj = glm::perspective(glm::radians(45.0f),
+                                (float)windowWidth / (float)windowHeight,
+                                0.1f, 100.0f);
 
         selector.update((int)relativeMouseX, (int)relativeMouseY, windowWidth, windowHeight, view, proj, objects);
 
         if (selector.getSelectedObject())
+        {
             std::cout << "[DEBUG] Object selected !" << std::endl;
+            gizmo.setTarget(selector.getSelectedObject());
+            gizmo.render(view, proj);
+        }
     }
 }
 

@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include "UI/GUIWindow.hpp"
+#include "UI/Gizmo.hpp"
 #include "Engine/OpenGLContext.hpp"
 #include "Engine/ThreeDObjectSelector.hpp"
 #include <imgui.h>
@@ -13,6 +14,7 @@ class ThreeDObject;
 class ThreeDWindow : public GUIWindow
 {
 public:
+    Gizmo gizmo;
     ImVec2 oglChildPos;
     ImVec2 oglChildSize;
     std::string title = "Hello Window";
@@ -30,6 +32,9 @@ public:
     void render() override;
 
 private:
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 proj = glm::mat4(1.0f);
+
     OpenGLContext *openGLContext = nullptr;
     ThreeDObjectSelector selector;
     std::vector<ThreeDObject *> objects;

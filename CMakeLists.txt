@@ -14,6 +14,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/InternalLogic
     ${CMAKE_CURRENT_SOURCE_DIR}/src/WorldObjects
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui/example
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/glad
     ${SDL2_INCLUDE_DIRS}
     ${SDL2_IMAGE_INCLUDE_DIR}
@@ -37,6 +38,12 @@ file(GLOB IMGUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
 )
+
+# ImGuizmo sources
+file(GLOB IMGUIZMO_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/ImGuizmo/ImGuizmo.cpp
+)
+list(APPEND SOURCES ${IMGUIZMO_SOURCES})
 
 # Glad sources
 file(GLOB_RECURSE GLAD_SOURCES CONFIGURE_DEPENDS src/ThirdParty/glad/*.c)
@@ -82,7 +89,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/WorldObjects
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui/backends
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/imgui/example
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/glad/include  
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ThirdParty/ImGuizmo
     ${SDL2_INCLUDE_DIRS}
     ${SDL2_IMAGE_INCLUDE_DIR}
 )
