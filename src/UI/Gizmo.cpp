@@ -1,6 +1,9 @@
 #include "UI/Gizmo.hpp"
+#include "imgui.h"
+#include "ImGuizmo.h"
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <filesystem>
 
@@ -95,7 +98,7 @@ void Gizmo::render(const glm::mat4 &view, const glm::mat4 &projection)
 
     initialize();
 
-    glm::vec3 currentPos = target->getPosition();
+    glm::vec3 currentPos = target->getPosition() + glm::vec3(0.5f, 0.5f, 0.5f);
     static glm::vec3 lastRenderedPos = glm::vec3(-9999.0f);
 
     if (currentPos != lastRenderedPos)
@@ -116,4 +119,26 @@ void Gizmo::render(const glm::mat4 &view, const glm::mat4 &projection)
     glBindVertexArray(vao);
     glDrawArrays(GL_LINES, 0, 6);
     glBindVertexArray(0);
+
+    ImGuizmo::BeginFrame();
+
+    ImGuiIO &io = ImGui::GetIO();
+    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+    ImGuizmo::SetDrawlist();
+
+    glm::mat4 objectMatrix(1.0f);
+    objectMatrix[3] = glm::vec4(currentPos, 1.0f);
+
+    ImGuizmo::Manipulate(
+        glm::value_ptr(view),
+        glm::value_ptr(projection),
+        ImGuizmo::TRANSLATE,
+        ImGuizmo::WORLD,
+        glm::value_ptr(objectMatrix));
+
+    if (ImGuizmo::IsUsing())
+    {
+        glm::vec3 newPos = glm::vec3(objectMatrix[3]) - glm::vec3(0.5f, 0.5f, 0.5f);
+        target->setPosition(newPos);
+    }
 }
