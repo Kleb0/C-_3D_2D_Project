@@ -108,9 +108,7 @@ void ThreeDWindow::handleClick()
         selector.update((int)relativeMouseX, (int)relativeMouseY, windowWidth, windowHeight, view, proj, objects);
 
         if (selector.getSelectedObject())
-            std::cout << "[DEBUG] Objet sélectionné !" << std::endl;
-        else
-            std::cout << "[DEBUG] Aucun objet sélectionné." << std::endl;
+            std::cout << "[DEBUG] Object selected !" << std::endl;
     }
 }
 

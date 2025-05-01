@@ -27,24 +27,19 @@ void ThreeDObjectSelector::update(int mouseX, int mouseY, int screenWidth, int s
 
     for (auto *obj : objects)
     {
-        std::cout << "[DEBUG] Testing object at: "
-                  << obj->getPosition().x << ", "
-                  << obj->getPosition().y << ", "
-                  << obj->getPosition().z << std::endl;
-
         if (rayIntersectsCube(rayOrigin, rayWorld, *obj))
         {
-            std::cout << "[DEBUG] → Intersection détectée avec objet à "
+            float distance = glm::length(obj->getPosition() - rayOrigin);
+            std::cout << "[DEBUG] Ray intersects object at: "
                       << obj->getPosition().x << ", "
                       << obj->getPosition().y << ", "
-                      << obj->getPosition().z << std::endl;
-        }
-        else
-        {
-            std::cout << "[DEBUG] → Aucune intersection avec objet à "
-                      << obj->getPosition().x << ", "
-                      << obj->getPosition().y << ", "
-                      << obj->getPosition().z << std::endl;
+                      << obj->getPosition().z << "at following distance " << distance << std::endl;
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestObject = obj;
+            }
         }
     }
 
