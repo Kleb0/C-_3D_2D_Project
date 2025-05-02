@@ -13,6 +13,8 @@ public:
     glm::vec3 getPosition() const { return position; }
     void setPosition(const glm::vec3 &pos) { position = pos; }
 
+    glm::vec3 getCenter() const;
+
 private:
     unsigned int vao = 0;
     unsigned int vbo = 0;

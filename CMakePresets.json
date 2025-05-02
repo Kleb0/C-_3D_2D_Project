@@ -9,7 +9,7 @@
         "name": "msys2-mingw64-debug",
         "displayName": "MSYS2 MinGW64 (Debug)",
         "generator": "MinGW Makefiles",
-        "description": "Utilise le toolchain MSYS2 mingw64 avec Qt6 pour Better Dwarf Fortress",
+        "description": "Utilise le toolchain MSYS2 mingw64",
         "binaryDir": "${sourceDir}/build",
         "cacheVariables": {
           "CMAKE_BUILD_TYPE": "Debug",
@@ -17,7 +17,6 @@
           "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
           "CMAKE_PREFIX_PATH": "C:/msys64/mingw64/lib/cmake",
           "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-
         }
       }
     ],

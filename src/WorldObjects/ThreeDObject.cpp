@@ -140,3 +140,8 @@ void ThreeDObject::render(const glm::mat4 &viewProj)
 
     glDepthMask(GL_TRUE);
 }
+
+glm::vec3 ThreeDObject::getCenter() const
+{
+    return position;
+}

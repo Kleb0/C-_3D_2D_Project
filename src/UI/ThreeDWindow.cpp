@@ -68,12 +68,6 @@ void ThreeDWindow::render()
         }
 
         updateGizmo();
-
-        if (selector.getSelectedObject())
-        {
-            gizmo.render(view, proj);
-        }
-
         ImGui::EndChild();
     }
 
@@ -117,8 +111,7 @@ void ThreeDWindow::handleClick()
         if (selector.getSelectedObject())
         {
             std::cout << "[DEBUG] Object selected !" << std::endl;
-            gizmo.setTarget(selector.getSelectedObject());
-            gizmo.render(view, proj);
+            Similigizmo.setTarget(selector.getSelectedObject());
         }
     }
 }
@@ -128,6 +121,8 @@ void ThreeDWindow::updateGizmo()
     ImGuiGizmo::drawGizmo(selector.getSelectedObject());
     if (selector.getSelectedObject())
     {
+        Similigizmo.render(view, proj, oglChildPos, oglChildSize);
+
         ImGui::Text("Objet sélectionné à la position : %.2f, %.2f, %.2f",
                     selector.getSelectedObject()->getPosition().x,
                     selector.getSelectedObject()->getPosition().y,

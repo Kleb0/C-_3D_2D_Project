@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include "UI/GUIWindow.hpp"
-#include "UI/Gizmo.hpp"
+#include "UI/SimiliGizmo.hpp"
 #include "Engine/OpenGLContext.hpp"
 #include "Engine/ThreeDObjectSelector.hpp"
 #include <imgui.h>
@@ -14,7 +14,7 @@ class ThreeDObject;
 class ThreeDWindow : public GUIWindow
 {
 public:
-    Gizmo gizmo;
+    SimiliGizmo Similigizmo;
     ImVec2 oglChildPos;
     ImVec2 oglChildSize;
     std::string title = "Hello Window";
