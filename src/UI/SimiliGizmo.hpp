@@ -7,8 +7,11 @@
 class SimiliGizmo
 {
 public:
+    ThreeDObject *getTarget() const { return target; }
     void setTarget(ThreeDObject *object);
-    void render(const glm::mat4 &view, const glm::mat4 &projection, const ImVec2 &pos, const ImVec2 &size);
+    void drawInfo();
+    void disable();
+    bool hasTarget() const { return target != nullptr; }
 
 private:
     void initialize();

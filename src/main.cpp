@@ -12,7 +12,6 @@
 #include "WorldObjects/ThreedObject.hpp"
 #include "InternalLogic/AssemblerLogic.hpp"
 #include "Engine/OpenGLContext.hpp"
-#include "Engine/ImGuiGizmo.hpp"
 #include "Engine/ThreeDObjectSelector.hpp"
 
 int main()
@@ -33,7 +32,6 @@ int main()
 
     add(gui, myInfoWindow);
     add(gui, myThreeDWindow);
-
     myCube.setPosition(glm::vec3(2.5f, 0.5f, 2.5f));
     add(myThreeDWindow, myCube);
     add(myThreeDWindow, renderer);

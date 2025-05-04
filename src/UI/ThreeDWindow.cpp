@@ -1,10 +1,12 @@
 
 #include <glad/glad.h>
+#include <imgui_internal.h>
+#include <ImGuizmo.h>
 #include "UI/ThreeDWindow.hpp"
 #include "WorldObjects/ThreeDObject.hpp"
 #include <SDL2/SDL.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "Engine/ImGuiGizmo.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 ThreeDWindow::ThreeDWindow() {}
@@ -31,6 +33,104 @@ ThreeDWindow &ThreeDWindow::add(ThreeDObject &object)
     return addObject(object);
 }
 
+void ThreeDWindow::handleClick()
+{
+    double mouseX, mouseY;
+    glfwGetCursorPos(glfwWindow, &mouseX, &mouseY);
+
+    float relativeMouseX = mouseX - oglChildPos.x;
+    float relativeMouseY = mouseY - oglChildPos.y;
+    relativeMouseY = oglChildSize.y - relativeMouseY;
+
+    if (relativeMouseX >= 0 && relativeMouseX <= oglChildSize.x &&
+        relativeMouseY >= 0 && relativeMouseY <= oglChildSize.y)
+    {
+        int windowWidth = openGLContext->getWidth();
+        int windowHeight = openGLContext->getHeight();
+
+        view = glm::lookAt(
+            glm::vec3(5.0f, 10.0f, 10.0f),
+            glm::vec3(2.5f, 0.0f, 2.5f),
+            glm::vec3(0.0f, 1.0f, 0.0f));
+
+        proj = glm::perspective(glm::radians(45.0f),
+                                (float)windowWidth / (float)windowHeight,
+                                0.1f, 100.0f);
+
+        bool preventSelection = Similigizmo.hasTarget() && ImGuizmo::IsOver();
+
+        if (!preventSelection)
+        {
+            selector.update((int)relativeMouseX, (int)relativeMouseY, windowWidth, windowHeight, view, proj, objects);
+        }
+        else
+        {
+            std::cout << "[INFO] Gizmo is active and has a target, selection is disabled." << std::endl;
+        }
+
+        ThreeDObject *selected = selector.getSelectedObject();
+
+        for (auto *obj : objects)
+        {
+            obj->setSelected(false);
+        }
+        if (selected)
+        {
+            selected->setSelected(true);
+            Similigizmo.setTarget(selected);
+        }
+        else
+        {
+            Similigizmo.disable();
+        }
+    }
+}
+
+void ThreeDWindow::updateGizmo()
+{
+    ThreeDObject *selected = selector.getSelectedObject();
+
+    if (!selected)
+        return;
+
+    ImGuizmo::BeginFrame();
+    ImGuizmo::Enable(true);
+    ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetRect(oglChildPos.x, oglChildPos.y, oglChildSize.x, oglChildSize.y);
+    ImGuizmo::SetGizmoSizeClipSpace(0.2f);
+
+    glm::mat4 model = selected->getModelMatrix();
+    glm::vec3 posBefore = selected->getPosition();
+
+    static ImGuizmo::OPERATION currentGizmoOperation = ImGuizmo::TRANSLATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_W))
+        currentGizmoOperation = ImGuizmo::TRANSLATE;
+
+    ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
+                         currentGizmoOperation, ImGuizmo::WORLD,
+                         glm::value_ptr(model));
+
+    if (ImGuizmo::IsUsing())
+    {
+        glm::vec3 translation;
+        ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model),
+                                              glm::value_ptr(translation),
+                                              nullptr, nullptr);
+
+        selected->setPosition(translation);
+
+        glm::vec3 delta = translation - posBefore;
+
+        if (fabs(delta.x) > fabs(delta.y) && fabs(delta.x) > fabs(delta.z))
+            std::cout << "[GIZMO] X axis clicked." << std::endl;
+        else if (fabs(delta.y) > fabs(delta.x) && fabs(delta.y) > fabs(delta.z))
+            std::cout << "[GIZMO] Y axis clicked." << std::endl;
+        else if (fabs(delta.z) > fabs(delta.x) && fabs(delta.z) > fabs(delta.y))
+            std::cout << "[GIZMO] Z axis clicked." << std::endl;
+    }
+}
+
 void ThreeDWindow::render()
 {
     ImGui::Begin(title.c_str());
@@ -41,7 +141,7 @@ void ThreeDWindow::render()
         ImGui::Text("Contenu OpenGL attaché !");
         ImGui::BeginChild("OpenGLChildWindow", ImVec2(0, 0), true, ImGuiWindowFlags_None);
 
-        oglChildPos = ImGui::GetWindowPos();
+        oglChildPos = ImGui::GetCursorScreenPos();
         oglChildSize = ImGui::GetContentRegionAvail();
 
         int newWidth = static_cast<int>(oglChildSize.x);
@@ -68,64 +168,9 @@ void ThreeDWindow::render()
         }
 
         updateGizmo();
+
         ImGui::EndChild();
     }
 
     ImGui::End();
-}
-
-void ThreeDWindow::handleClick()
-{
-    double mouseX, mouseY;
-    glfwGetCursorPos(glfwWindow, &mouseX, &mouseY);
-
-    std::cout << "Mouse Detected ! [DEBUG] Mouse position: " << mouseX << ", " << mouseY << std::endl;
-
-    float relativeMouseX = mouseX - oglChildPos.x;
-
-    float relativeMouseY = mouseY - oglChildPos.y;
-    relativeMouseY = oglChildSize.y - relativeMouseY;
-
-    for (auto *obj : objects)
-    {
-        std::cout << "OBJ POS: " << obj->getPosition().x << " " << obj->getPosition().y << " " << obj->getPosition().z << std::endl;
-    }
-
-    if (relativeMouseX >= 0 && relativeMouseX <= oglChildSize.x &&
-        relativeMouseY >= 0 && relativeMouseY <= oglChildSize.y)
-    {
-        int windowWidth = openGLContext->getWidth();
-        int windowHeight = openGLContext->getHeight();
-
-        view = glm::lookAt(
-            glm::vec3(5.0f, 10.0f, 10.0f),
-            glm::vec3(2.5f, 0.0f, 2.5f),
-            glm::vec3(0.0f, 1.0f, 0.0f));
-
-        proj = glm::perspective(glm::radians(45.0f),
-                                (float)windowWidth / (float)windowHeight,
-                                0.1f, 100.0f);
-
-        selector.update((int)relativeMouseX, (int)relativeMouseY, windowWidth, windowHeight, view, proj, objects);
-
-        if (selector.getSelectedObject())
-        {
-            std::cout << "[DEBUG] Object selected !" << std::endl;
-            Similigizmo.setTarget(selector.getSelectedObject());
-        }
-    }
-}
-
-void ThreeDWindow::updateGizmo()
-{
-    ImGuiGizmo::drawGizmo(selector.getSelectedObject());
-    if (selector.getSelectedObject())
-    {
-        Similigizmo.render(view, proj, oglChildPos, oglChildSize);
-
-        ImGui::Text("Objet sélectionné à la position : %.2f, %.2f, %.2f",
-                    selector.getSelectedObject()->getPosition().x,
-                    selector.getSelectedObject()->getPosition().y,
-                    selector.getSelectedObject()->getPosition().z);
-    }
 }

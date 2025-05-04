@@ -1,11 +1,8 @@
 #include <glad/glad.h>
 #include "UI/SimiliGizmo.hpp"
 #include "imgui.h"
-#include "ImGuizmo.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-#include <filesystem>
 
 void SimiliGizmo::setTarget(ThreeDObject *object)
 {
@@ -29,31 +26,20 @@ void SimiliGizmo::initialize()
     initialized = true;
 }
 
-void SimiliGizmo::render(const glm::mat4 &view, const glm::mat4 &projection, const ImVec2 &pos, const ImVec2 &size)
+void SimiliGizmo::drawInfo()
 {
-    if (!target)
-        return;
-
-    initialize();
-
-    ImGuizmo::BeginFrame();
-
-    ImGuizmo::SetDrawlist();
-    ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
-
-    glm::mat4 objectMatrix = glm::mat4(1.0f);
-    objectMatrix = glm::translate(objectMatrix, target->getPosition());
-
-    ImGuizmo::Manipulate(
-        glm::value_ptr(view),
-        glm::value_ptr(projection),
-        ImGuizmo::TRANSLATE,
-        ImGuizmo::WORLD,
-        glm::value_ptr(objectMatrix));
-
-    if (ImGuizmo::IsUsing())
+    if (target)
     {
-        glm::vec3 newPos = glm::vec3(objectMatrix[3]);
-        target->setPosition(newPos);
+        ImGui::Begin("Gizmo");
+        ImGui::Text("Selected Object");
+        glm::vec3 pos = target->getPosition();
+        ImGui::Text("Position: (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z);
+        ImGui::End();
     }
+}
+
+void SimiliGizmo::disable()
+{
+    target = nullptr;
+    std::cout << "[SIMILI_GIZMO] has been disabled." << std::endl;
 }
