@@ -117,7 +117,7 @@ void ThreeDObject::initialize()
 
 void ThreeDObject::render(const glm::mat4 &viewProj)
 {
-    modelMatrix = glm::translate(glm::mat4(1.0f), position);
+    glm::mat4 modelMatrix = getModelMatrix();
 
     glUseProgram(shaderProgram);
 

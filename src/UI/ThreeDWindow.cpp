@@ -100,40 +100,46 @@ void ThreeDWindow::updateGizmo()
     ImGuizmo::SetRect(oglChildPos.x, oglChildPos.y, oglChildSize.x, oglChildSize.y);
     ImGuizmo::SetGizmoSizeClipSpace(0.2f);
 
-    glm::mat4 model = selected->getModelMatrix();
-    glm::vec3 posBefore = selected->getPosition();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, selected->getPosition());
 
     static ImGuizmo::OPERATION currentGizmoOperation = ImGuizmo::TRANSLATE;
+
     if (ImGui::IsKeyPressed(ImGuiKey_W))
         currentGizmoOperation = ImGuizmo::TRANSLATE;
 
-    ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
-                         currentGizmoOperation, ImGuizmo::WORLD,
-                         glm::value_ptr(model));
+    bool isManipulating = ImGuizmo::Manipulate(
+        glm::value_ptr(view),
+        glm::value_ptr(proj),
+        currentGizmoOperation,
+        ImGuizmo::WORLD,
+        glm::value_ptr(model));
 
     if (ImGuizmo::IsUsing())
     {
-        glm::vec3 translation;
+        std::cout << "[DEBUG] Manipulation in progress!" << std::endl;
+
+        glm::vec3 translation, rotation, scale;
         ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model),
                                               glm::value_ptr(translation),
-                                              nullptr, nullptr);
+                                              glm::value_ptr(rotation),
+                                              glm::value_ptr(scale));
 
         selected->setPosition(translation);
 
-        glm::vec3 delta = translation - posBefore;
+        std::cout << "[DEBUG] New position: " << translation.x << ", " << translation.y << ", " << translation.z << std::endl;
 
-        if (fabs(delta.x) > fabs(delta.y) && fabs(delta.x) > fabs(delta.z))
-            std::cout << "[GIZMO] X axis clicked." << std::endl;
-        else if (fabs(delta.y) > fabs(delta.x) && fabs(delta.y) > fabs(delta.z))
-            std::cout << "[GIZMO] Y axis clicked." << std::endl;
-        else if (fabs(delta.z) > fabs(delta.x) && fabs(delta.z) > fabs(delta.y))
-            std::cout << "[GIZMO] Z axis clicked." << std::endl;
+        wasUsingGizmoLastFrame = ImGuizmo::IsUsing();
     }
 }
 
 void ThreeDWindow::render()
 {
-    ImGui::Begin(title.c_str());
+
+    bool isGizmoActive = ImGuizmo::IsUsing() || wasUsingGizmoLastFrame;
+    ImGuiWindowFlags flags = isGizmoActive ? ImGuiWindowFlags_NoMove : ImGuiWindowFlags_None;
+    ImGui::Begin(title.c_str(), nullptr, flags);
+
     ImGui::Text("%s", text.c_str());
 
     if (openGLContext)
@@ -157,12 +163,9 @@ void ThreeDWindow::render()
 
         ImTextureID textureID = (ImTextureID)(intptr_t)openGLContext->getTexture();
 
-        if (ImGui::ImageButton("OpenGLTextureButton",
-                               textureID,
-                               oglChildSize,
-                               ImVec2(0, 1), ImVec2(1, 0),
-                               ImVec4(0, 0, 0, 0),
-                               ImVec4(1, 1, 1, 1)))
+        ImGui::Image(textureID, oglChildSize, ImVec2(0, 1), ImVec2(1, 0));
+
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
             handleClick();
         }
