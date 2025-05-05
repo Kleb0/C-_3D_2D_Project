@@ -7,7 +7,9 @@ class ThreeDObjectSelector
 {
 public:
     ThreeDObjectSelector();
-    void update(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4 &view, const glm::mat4 &projection, const std::vector<ThreeDObject *> &objects);
+    void pickUpTarget(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4 &view, const glm::mat4 &projection, const std::vector<ThreeDObject *> &objects);
+    // void update(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4 &view, const glm::mat4 &projection, const std::vector<ThreeDObject *> &objects);
+    void clearTarget();
     void select(ThreeDObject *object);
 
     ThreeDObject *getSelectedObject() const { return selectedObject; }

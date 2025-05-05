@@ -7,7 +7,7 @@ ThreeDObjectSelector::ThreeDObjectSelector()
 {
 }
 
-void ThreeDObjectSelector::update(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4 &view, const glm::mat4 &projection, const std::vector<ThreeDObject *> &objects)
+void ThreeDObjectSelector::pickUpTarget(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4 &view, const glm::mat4 &projection, const std::vector<ThreeDObject *> &objects)
 {
     float x = (2.0f * mouseX) / screenWidth - 1.0f;
     float y = 1.0f - (2.0f * mouseY) / screenHeight;
@@ -73,6 +73,11 @@ bool ThreeDObjectSelector::rayIntersectsCube(const glm::vec3 &rayOrigin, const g
         return false;
 
     return true;
+}
+
+void ThreeDObjectSelector::clearTarget()
+{
+    selectedObject = nullptr;
 }
 
 void ThreeDObjectSelector::select(ThreeDObject *object)

@@ -146,7 +146,7 @@ glm::vec3 ThreeDObject::getCenter() const
     return position;
 }
 
-void ThreeDObject::translate(const glm::vec3 &offset)
+void ThreeDObject::translate(const glm::vec3 &newPosition)
 {
-    position += offset;
+    position = newPosition;
 }

@@ -61,12 +61,11 @@ void ThreeDWindow::handleClick()
 
         if (!preventSelection)
         {
-            selector.update((int)relativeMouseX, (int)relativeMouseY, windowWidth, windowHeight, view, proj, objects);
+            selector.pickUpTarget((int)relativeMouseX, (int)relativeMouseY, windowWidth, windowHeight, view, proj, objects);
         }
+
         else
         {
-
-            // Réactivation manuelle du Gizmo si un objet était sélectionné
             ThreeDObject *target = Similigizmo.getTarget();
             if (target)
             {
@@ -87,19 +86,19 @@ void ThreeDWindow::handleClick()
         }
         else
         {
-            // Si un Gizmo était actif juste avant, ne pas désactiver brutalement
             if (!ImGuizmo::IsUsing() && !wasUsingGizmoLastFrame)
             {
                 for (auto *obj : objects)
                     obj->setSelected(false);
 
                 Similigizmo.disable();
+                selector.clearTarget();
             }
         }
     }
 }
 
-void ThreeDWindow::updateGizmo()
+void ThreeDWindow::manipulateThreeDObject()
 {
     // std::cout << "[DEBUG] UpdateGizmo called!" << std::endl;
     ThreeDObject *selected = selector.getSelectedObject();
@@ -107,6 +106,7 @@ void ThreeDWindow::updateGizmo()
     if (!selected)
         return;
 
+    // here is were set the Gizmo when the object is selected
     ImGuizmo::BeginFrame();
     ImGuizmo::Enable(true);
     ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -139,11 +139,50 @@ void ThreeDWindow::updateGizmo()
                                               glm::value_ptr(rotation),
                                               glm::value_ptr(scale));
 
-        selected->setPosition(translation);
+        // we pass the translation from the gizmo to the object
+        selected->translate(translation);
 
         // std::cout << "[DEBUG] New position: " << translation.x << ", " << translation.y << ", " << translation.z << std::endl;
         wasUsingGizmoLastFrame = ImGuizmo::IsUsing();
     }
+}
+
+void ThreeDWindow::threeDRendering()
+{
+    ImGui::BeginChild("OpenGLChildWindow", ImVec2(0, 0), true, ImGuiWindowFlags_None);
+
+    oglChildPos = ImGui::GetCursorScreenPos();
+    oglChildSize = ImGui::GetContentRegionAvail();
+
+    int newWidth = static_cast<int>(oglChildSize.x);
+    int newHeight = static_cast<int>(oglChildSize.y);
+
+    if (newWidth > 0 && newHeight > 0 &&
+        (newWidth != openGLContext->getWidth() || newHeight != openGLContext->getHeight()))
+    {
+        openGLContext->resize(newWidth, newHeight);
+    }
+
+    openGLContext->render();
+
+    ImTextureID textureID = (ImTextureID)(intptr_t)openGLContext->getTexture();
+
+    ImGui::Image(textureID, oglChildSize, ImVec2(0, 1), ImVec2(1, 0));
+
+    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+        ImGui::GetCurrentWindow()->Flags |= ImGuiWindowFlags_NoMove;
+        handleClick();
+    }
+
+    if (selector.getSelectedObject() != nullptr)
+    {
+        // the object manipulation is made during the the rendering,
+        // and we ensure it is done only if the selector as one or several selected objetcs
+        manipulateThreeDObject();
+    }
+
+    ImGui::EndChild();
 }
 
 void ThreeDWindow::render()
@@ -155,39 +194,8 @@ void ThreeDWindow::render()
 
     if (openGLContext)
     {
-        ImGui::Text("Contenu OpenGL attaché !");
-        ImGui::BeginChild("OpenGLChildWindow", ImVec2(0, 0), true, ImGuiWindowFlags_None);
-
-        oglChildPos = ImGui::GetCursorScreenPos();
-        oglChildSize = ImGui::GetContentRegionAvail();
-
-        int newWidth = static_cast<int>(oglChildSize.x);
-        int newHeight = static_cast<int>(oglChildSize.y);
-
-        if (newWidth > 0 && newHeight > 0 &&
-            (newWidth != openGLContext->getWidth() || newHeight != openGLContext->getHeight()))
-        {
-            openGLContext->resize(newWidth, newHeight);
-        }
-
-        openGLContext->render();
-
-        ImTextureID textureID = (ImTextureID)(intptr_t)openGLContext->getTexture();
-
-        ImGui::Image(textureID, oglChildSize, ImVec2(0, 1), ImVec2(1, 0));
-
-        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-        {
-            ImGui::GetCurrentWindow()->Flags |= ImGuiWindowFlags_NoMove;
-            handleClick();
-        }
-
-        if (selector.getSelectedObject() != nullptr)
-        {
-            updateGizmo();
-        }
-
-        ImGui::EndChild();
+        ImGui::Text("Attached OpenGL content :");
+        threeDRendering();
     }
 
     ImGui::End();

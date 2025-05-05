@@ -30,7 +30,7 @@ public:
     GLFWwindow *glfwWindow = nullptr;
 
     void render() override;
-
+    void threeDRendering();
     bool wasUsingGizmoLastFrame = false;
 
 private:
@@ -42,5 +42,5 @@ private:
     std::vector<ThreeDObject *> objects;
 
     void handleClick();
-    void updateGizmo();
+    void manipulateThreeDObject();
 };

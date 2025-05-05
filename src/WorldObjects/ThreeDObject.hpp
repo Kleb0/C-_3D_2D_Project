@@ -13,7 +13,7 @@ public:
     void render(const glm::mat4 &viewProj);
     glm::vec3 getPosition() const { return position; }
     void setPosition(const glm::vec3 &pos) { position = pos; }
-    void translate(const glm::vec3 &offset);
+    void translate(const glm::vec3 &newPosition);
 
     glm::vec3 getCenter() const;
 
