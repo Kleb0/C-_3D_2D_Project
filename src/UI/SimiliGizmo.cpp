@@ -38,6 +38,17 @@ void SimiliGizmo::drawInfo()
     }
 }
 
+void SimiliGizmo::activate()
+{
+    if (target)
+    {
+        std::cout << "[SIMILI_GIZMO] activated for object at position: "
+                  << target->getPosition().x << ", "
+                  << target->getPosition().y << ", "
+                  << target->getPosition().z << std::endl;
+    }
+}
+
 void SimiliGizmo::disable()
 {
     target = nullptr;

@@ -17,10 +17,7 @@ void ThreeDObjectSelector::update(int mouseX, int mouseY, int screenWidth, int s
     rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
 
     glm::vec3 rayWorld = glm::normalize(glm::vec3(glm::inverse(view) * rayEye));
-    glm::vec3 rayOrigin = glm::vec3(glm::inverse(view)[3]);
-
-    std::cout << "[DEBUG] Ray origin: " << rayOrigin.x << ", " << rayOrigin.y << ", " << rayOrigin.z << std::endl;
-    std::cout << "[DEBUG] Ray dir: " << rayWorld.x << ", " << rayWorld.y << ", " << rayWorld.z << std::endl;
+    glm::vec3 rayOrigin = glm::vec3(glm::inverse(view) * glm::vec4(0, 0, 0, 1));
 
     float closestDistance = std::numeric_limits<float>::max();
     ThreeDObject *closestObject = nullptr;
@@ -30,11 +27,6 @@ void ThreeDObjectSelector::update(int mouseX, int mouseY, int screenWidth, int s
         if (rayIntersectsCube(rayOrigin, rayWorld, *obj))
         {
             float distance = glm::length(obj->getPosition() - rayOrigin);
-            std::cout << "[DEBUG] Ray intersects object at: "
-                      << obj->getPosition().x << ", "
-                      << obj->getPosition().y << ", "
-                      << obj->getPosition().z << "at following distance " << distance << std::endl;
-
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -48,16 +40,20 @@ void ThreeDObjectSelector::update(int mouseX, int mouseY, int screenWidth, int s
 
 bool ThreeDObjectSelector::rayIntersectsCube(const glm::vec3 &rayOrigin, const glm::vec3 &rayDir, const ThreeDObject &object)
 {
-    glm::vec3 min = object.getPosition() - glm::vec3(0.5f);
-    glm::vec3 max = object.getPosition() + glm::vec3(0.5f);
+    glm::mat4 invModel = glm::inverse(object.getModelMatrix());
+    glm::vec3 localRayOrigin = glm::vec3(invModel * glm::vec4(rayOrigin, 1.0f));
+    glm::vec3 localRayDir = glm::normalize(glm::vec3(invModel * glm::vec4(rayDir, 0.0f)));
 
-    float tmin = (min.x - rayOrigin.x) / rayDir.x;
-    float tmax = (max.x - rayOrigin.x) / rayDir.x;
+    glm::vec3 min(-0.5f);
+    glm::vec3 max(0.5f);
+
+    float tmin = (min.x - localRayOrigin.x) / localRayDir.x;
+    float tmax = (max.x - localRayOrigin.x) / localRayDir.x;
     if (tmin > tmax)
         std::swap(tmin, tmax);
 
-    float tymin = (min.y - rayOrigin.y) / rayDir.y;
-    float tymax = (max.y - rayOrigin.y) / rayDir.y;
+    float tymin = (min.y - localRayOrigin.y) / localRayDir.y;
+    float tymax = (max.y - localRayOrigin.y) / localRayDir.y;
     if (tymin > tymax)
         std::swap(tymin, tymax);
 
@@ -68,8 +64,8 @@ bool ThreeDObjectSelector::rayIntersectsCube(const glm::vec3 &rayOrigin, const g
     if (tymax < tmax)
         tmax = tymax;
 
-    float tzmin = (min.z - rayOrigin.z) / rayDir.z;
-    float tzmax = (max.z - rayOrigin.z) / rayDir.z;
+    float tzmin = (min.z - localRayOrigin.z) / localRayDir.z;
+    float tzmax = (max.z - localRayOrigin.z) / localRayDir.z;
     if (tzmin > tzmax)
         std::swap(tzmin, tzmax);
 
@@ -77,4 +73,9 @@ bool ThreeDObjectSelector::rayIntersectsCube(const glm::vec3 &rayOrigin, const g
         return false;
 
     return true;
+}
+
+void ThreeDObjectSelector::select(ThreeDObject *object)
+{
+    selectedObject = object;
 }

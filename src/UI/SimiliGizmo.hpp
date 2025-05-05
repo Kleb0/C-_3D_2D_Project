@@ -11,6 +11,7 @@ public:
     void setTarget(ThreeDObject *object);
     void drawInfo();
     void disable();
+    void activate();
     bool hasTarget() const { return target != nullptr; }
 
 private:

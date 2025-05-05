@@ -65,29 +65,43 @@ void ThreeDWindow::handleClick()
         }
         else
         {
-            std::cout << "[INFO] Gizmo is active and has a target, selection is disabled." << std::endl;
+
+            // Réactivation manuelle du Gizmo si un objet était sélectionné
+            ThreeDObject *target = Similigizmo.getTarget();
+            if (target)
+            {
+                selector.select(target);
+                std::cout << "[SIMILI_GIZMO] Reactivated manually on click." << std::endl;
+            }
         }
 
         ThreeDObject *selected = selector.getSelectedObject();
 
-        for (auto *obj : objects)
-        {
-            obj->setSelected(false);
-        }
         if (selected)
         {
+            for (auto *obj : objects)
+                obj->setSelected(false);
+
             selected->setSelected(true);
             Similigizmo.setTarget(selected);
         }
         else
         {
-            Similigizmo.disable();
+            // Si un Gizmo était actif juste avant, ne pas désactiver brutalement
+            if (!ImGuizmo::IsUsing() && !wasUsingGizmoLastFrame)
+            {
+                for (auto *obj : objects)
+                    obj->setSelected(false);
+
+                Similigizmo.disable();
+            }
         }
     }
 }
 
 void ThreeDWindow::updateGizmo()
 {
+    // std::cout << "[DEBUG] UpdateGizmo called!" << std::endl;
     ThreeDObject *selected = selector.getSelectedObject();
 
     if (!selected)
@@ -117,7 +131,7 @@ void ThreeDWindow::updateGizmo()
 
     if (ImGuizmo::IsUsing())
     {
-        std::cout << "[DEBUG] Manipulation in progress!" << std::endl;
+        // std::cout << "[DEBUG] Manipulation in progress!" << std::endl;
 
         glm::vec3 translation, rotation, scale;
         ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model),
@@ -127,17 +141,14 @@ void ThreeDWindow::updateGizmo()
 
         selected->setPosition(translation);
 
-        std::cout << "[DEBUG] New position: " << translation.x << ", " << translation.y << ", " << translation.z << std::endl;
-
+        // std::cout << "[DEBUG] New position: " << translation.x << ", " << translation.y << ", " << translation.z << std::endl;
         wasUsingGizmoLastFrame = ImGuizmo::IsUsing();
     }
 }
 
 void ThreeDWindow::render()
 {
-
-    bool isGizmoActive = ImGuizmo::IsUsing() || wasUsingGizmoLastFrame;
-    ImGuiWindowFlags flags = isGizmoActive ? ImGuiWindowFlags_NoMove : ImGuiWindowFlags_None;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_None;
     ImGui::Begin(title.c_str(), nullptr, flags);
 
     ImGui::Text("%s", text.c_str());
@@ -167,10 +178,14 @@ void ThreeDWindow::render()
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
+            ImGui::GetCurrentWindow()->Flags |= ImGuiWindowFlags_NoMove;
             handleClick();
         }
 
-        updateGizmo();
+        if (selector.getSelectedObject() != nullptr)
+        {
+            updateGizmo();
+        }
 
         ImGui::EndChild();
     }
