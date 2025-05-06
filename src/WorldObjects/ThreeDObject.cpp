@@ -1,6 +1,10 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include "WorldObjects/ThreedObject.hpp"
+#include <imgui.h>
+#include <ImGuizmo.h>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <iostream>
 
 const char *cubeVertexShaderSource = R"(
@@ -149,4 +153,27 @@ glm::vec3 ThreeDObject::getCenter() const
 void ThreeDObject::translate(const glm::vec3 &newPosition)
 {
     position = newPosition;
+}
+
+void ThreeDObject::rotate(const glm::vec3 &newRotation)
+{
+    rotation = newRotation;
+}
+
+void ThreeDObject::scale(const glm::vec3 &newScale)
+{
+    _scale = newScale;
+}
+
+void ThreeDObject::setModelMatrix(const glm::mat4 &matrix)
+{
+    glm::vec3 pos, rotEuler, scl;
+    ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(matrix),
+                                          glm::value_ptr(pos),
+                                          glm::value_ptr(rotEuler),
+                                          glm::value_ptr(scl));
+
+    position = pos;
+    _scale = scl;
+    rotation = glm::quat(glm::radians(rotEuler));
 }

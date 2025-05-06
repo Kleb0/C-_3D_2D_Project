@@ -114,13 +114,16 @@ void ThreeDWindow::manipulateThreeDObject()
     ImGuizmo::SetRect(oglChildPos.x, oglChildPos.y, oglChildSize.x, oglChildSize.y);
     ImGuizmo::SetGizmoSizeClipSpace(0.2f);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, selected->getPosition());
+    glm::mat4 model = selected->getModelMatrix();
 
     static ImGuizmo::OPERATION currentGizmoOperation = ImGuizmo::TRANSLATE;
 
     if (ImGui::IsKeyPressed(ImGuiKey_W))
         currentGizmoOperation = ImGuizmo::TRANSLATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_R))
+        currentGizmoOperation = ImGuizmo::ROTATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_S))
+        currentGizmoOperation = ImGuizmo::SCALE;
 
     bool isManipulating = ImGuizmo::Manipulate(
         glm::value_ptr(view),
@@ -132,16 +135,8 @@ void ThreeDWindow::manipulateThreeDObject()
     if (ImGuizmo::IsUsing())
     {
         // std::cout << "[DEBUG] Manipulation in progress!" << std::endl;
-
-        glm::vec3 translation, rotation, scale;
-        ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model),
-                                              glm::value_ptr(translation),
-                                              glm::value_ptr(rotation),
-                                              glm::value_ptr(scale));
-
-        // we pass the translation from the gizmo to the object
-        selected->translate(translation);
-
+        // check rotation
+        selected->setModelMatrix(model);
         // std::cout << "[DEBUG] New position: " << translation.x << ", " << translation.y << ", " << translation.z << std::endl;
         wasUsingGizmoLastFrame = ImGuizmo::IsUsing();
     }
