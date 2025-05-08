@@ -9,10 +9,10 @@ class ThreeDObject
 {
 public:
     ThreeDObject();
-    ~ThreeDObject();
+    virtual ~ThreeDObject();
 
-    void initialize();
-    void render(const glm::mat4 &viewProj);
+    virtual void initialize() = 0;
+    virtual void render(const glm::mat4 &viewProj) = 0;
 
     glm::vec3 getPosition() const { return position; }
     glm::vec3 getRotation() const { return glm::degrees(glm::eulerAngles(rotation)); }
@@ -27,30 +27,16 @@ public:
     void scale(const glm::vec3 &newScale);
 
     glm::vec3 getCenter() const;
-
     void setModelMatrix(const glm::mat4 &matrix);
-
-    glm::mat4 getModelMatrix() const
-    {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, position);
-        model *= glm::toMat4(rotation);
-        model = glm::scale(model, _scale);
-        return model;
-    }
+    glm::mat4 getModelMatrix() const;
 
     void setSelected(bool selected) { isCurrentlySelected = selected; }
     bool getSelected() const { return isCurrentlySelected; }
+    virtual bool isSelectable() const { return true; }
 
-private:
-    unsigned int vao = 0;
-    unsigned int vbo = 0;
-    unsigned int shaderProgram = 0;
-
+protected:
     glm::vec3 position = glm::vec3(0.0f);
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     glm::vec3 _scale = glm::vec3(1.0f);
-
-    void compileShaders();
     bool isCurrentlySelected = false;
 };

@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include "Engine/ThreeDSceneDrawer.hpp"
 #include "WorldObjects/ThreedObject.hpp"
+#include "WorldObjects/Camera.hpp"
 
 class OpenGLContext
 {
@@ -19,6 +20,7 @@ public:
     int getHeight() const { return height; }
 
     void add(ThreeDObject &object);
+    void setCamera(Camera *cam) { camera = cam; }
 
 private:
     glm::mat4 viewMatrix = glm::mat4(1.0f);
@@ -31,4 +33,5 @@ private:
     int height = 600;
 
     ThreeDSceneDrawer scene;
+    Camera *camera = nullptr;
 };

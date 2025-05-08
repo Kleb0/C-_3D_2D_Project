@@ -1,169 +1,16 @@
-#define GLM_ENABLE_EXPERIMENTAL
 #include "WorldObjects/ThreedObject.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <ImGuizmo.h>
-#include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <iostream>
 
-const char *cubeVertexShaderSource = R"(
-#version 330 core
-layout(location = 0) in vec3 aPos;
-uniform mat4 model;
-uniform mat4 viewProj;
-void main()
-{
-    gl_Position = viewProj * model * vec4(aPos, 1.0);
-}
-)";
+ThreeDObject::ThreeDObject() {}
+ThreeDObject::~ThreeDObject() {}
 
-const char *cubeFragmentShaderSource = R"(
-#version 330 core
-layout(location = 0) out vec4 FragColor;
-uniform vec4 color;
-void main()
-{
-    FragColor = color;
-}
-)";
+void ThreeDObject::translate(const glm::vec3 &newPosition) { position = newPosition; }
+void ThreeDObject::rotate(const glm::vec3 &newEulerRotationDegrees) { rotation = glm::quat(glm::radians(newEulerRotationDegrees)); }
+void ThreeDObject::scale(const glm::vec3 &newScale) { _scale = newScale; }
 
-ThreeDObject::ThreeDObject()
-{
-}
-
-ThreeDObject::~ThreeDObject()
-{
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteProgram(shaderProgram);
-}
-
-void ThreeDObject::compileShaders()
-{
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &cubeVertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &cubeFragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-}
-
-void ThreeDObject::initialize()
-{
-    compileShaders();
-
-    float vertices[] = {
-        // positions
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, -0.5f};
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
-}
-
-void ThreeDObject::render(const glm::mat4 &viewProj)
-{
-    glm::mat4 modelMatrix = getModelMatrix();
-
-    glUseProgram(shaderProgram);
-
-    unsigned int colorLoc = glGetUniformLocation(shaderProgram, "color");
-    glUniform4f(colorLoc, 0.3f, 0.7f, 0.9f, 0.3f);
-
-    unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-    unsigned int viewProjLoc = glGetUniformLocation(shaderProgram, "viewProj");
-
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    glUniformMatrix4fv(viewProjLoc, 1, GL_FALSE, glm::value_ptr(viewProj));
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDepthMask(GL_FALSE);
-
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-
-    glDepthMask(GL_TRUE);
-}
-
-glm::vec3 ThreeDObject::getCenter() const
-{
-    return position;
-}
-
-void ThreeDObject::translate(const glm::vec3 &newPosition)
-{
-    position = newPosition;
-}
-
-void ThreeDObject::rotate(const glm::vec3 &newRotation)
-{
-    rotation = newRotation;
-}
-
-void ThreeDObject::scale(const glm::vec3 &newScale)
-{
-    _scale = newScale;
-}
+glm::vec3 ThreeDObject::getCenter() const { return position; }
 
 void ThreeDObject::setModelMatrix(const glm::mat4 &matrix)
 {
@@ -176,4 +23,13 @@ void ThreeDObject::setModelMatrix(const glm::mat4 &matrix)
     position = pos;
     _scale = scl;
     rotation = glm::quat(glm::radians(rotEuler));
+}
+
+glm::mat4 ThreeDObject::getModelMatrix() const
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+    model *= glm::toMat4(rotation);
+    model = glm::scale(model, _scale);
+    return model;
 }

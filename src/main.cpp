@@ -13,6 +13,8 @@
 #include "InternalLogic/AssemblerLogic.hpp"
 #include "Engine/OpenGLContext.hpp"
 #include "Engine/ThreeDObjectSelector.hpp"
+#include "WorldObjects/Camera.hpp"
+#include "WorldObjects/Cube.hpp"
 
 int main()
 {
@@ -20,8 +22,9 @@ int main()
     InfoWindow myInfoWindow;
     ThreeDWindow myThreeDWindow;
     OpenGLContext renderer;
-    ThreeDObject myCube;
+    Cube myCube;
     ThreeDObjectSelector selector;
+    Camera mainCamera;
 
     myThreeDWindow.glfwWindow = gui.getWindow();
 
@@ -34,8 +37,10 @@ int main()
     add(gui, myThreeDWindow);
     myCube.setPosition(glm::vec3(2.5f, 0.5f, 2.5f));
     add(myThreeDWindow, myCube);
+    add(myThreeDWindow, mainCamera);
     add(myThreeDWindow, renderer);
     add(renderer, myCube);
-
+    add(renderer, mainCamera);
+    renderer.setCamera(&mainCamera);
     gui.run();
 }

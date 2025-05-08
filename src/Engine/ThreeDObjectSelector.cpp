@@ -24,6 +24,9 @@ void ThreeDObjectSelector::pickUpTarget(int mouseX, int mouseY, int screenWidth,
 
     for (auto *obj : objects)
     {
+        if (!obj->isSelectable())
+            continue;
+
         if (rayIntersectsCube(rayOrigin, rayWorld, *obj))
         {
             float distance = glm::length(obj->getPosition() - rayOrigin);

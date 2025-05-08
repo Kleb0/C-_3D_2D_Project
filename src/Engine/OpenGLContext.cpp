@@ -55,16 +55,19 @@ void OpenGLContext::render()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
+    if (!camera)
+    {
+        std::cerr << "[OpenGLContext] ERROR : No active camera. Rendering aborted.\n";
+        return;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    viewMatrix = glm::lookAt(
-        glm::vec3(5.0f, 10.0f, 10.0f),
-        glm::vec3(2.5f, 0.0f, 2.5f),
-        glm::vec3(0.0f, 1.0f, 0.0f));
-
-    projMatrix = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+    viewMatrix = camera->getViewMatrix();
+    projMatrix = camera->getProjectionMatrix((float)width / (float)height);
 
     scene.render();
 
