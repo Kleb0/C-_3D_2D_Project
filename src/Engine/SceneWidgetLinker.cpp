@@ -34,6 +34,9 @@ void SceneWidgetLinker::initialize()
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+    camera.setPosition(glm::vec3(5.0f, 10.0f, 10.0f));
+    camera.setTarget(glm::vec3(2.5f, 0.0f, 2.5f));
+
     scene.initialization();
 }
 
@@ -57,7 +60,11 @@ void SceneWidgetLinker::render()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    scene.render();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 proj = camera.getProjectionMatrix((float)width / (float)height);
+    glm::mat4 viewProj = proj * view;
+
+    scene.render(viewProj);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

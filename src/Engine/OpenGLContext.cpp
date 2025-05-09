@@ -1,5 +1,7 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include "Engine/OpenGLContext.hpp"
 
@@ -69,7 +71,7 @@ void OpenGLContext::render()
     viewMatrix = camera->getViewMatrix();
     projMatrix = camera->getProjectionMatrix((float)width / (float)height);
 
-    scene.render();
+    scene.render(projMatrix * viewMatrix);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

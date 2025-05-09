@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include "Engine/ThreeDSceneDrawer.hpp"
+#include "WorldObjects/Camera.hpp"
 
 class ThreeDWorldView
 {
@@ -22,4 +23,5 @@ private:
     int height = 600;
 
     ThreeDSceneDrawer scene;
+    Camera camera;
 };

@@ -57,7 +57,11 @@ void ThreeDWorldView::render()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    scene.render();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 proj = camera.getProjectionMatrix((float)width / (float)height);
+    glm::mat4 viewProj = proj * view;
+
+    scene.render(viewProj);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -1,5 +1,6 @@
 #include "WorldObjects/Camera.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 void Camera::initialize()
 {
@@ -16,11 +17,31 @@ Camera::Camera()
 
 glm::mat4 Camera::getViewMatrix() const
 {
-    glm::vec3 pos = getPosition();
-    return glm::lookAt(pos, glm::vec3(2.5f, 0.0f, 2.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+    return glm::lookAt(getPosition(), target, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const
 {
     return glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
+}
+
+void Camera::zoom(float offset)
+{
+    std::cout << "[DEBUG] Zooming camera: " << offset << std::endl;
+    fov -= offset * zoomSpeed;
+    if (fov < 20.0f)
+        fov = 20.0f;
+    if (fov > 90.0f)
+        fov = 90.0f;
+}
+
+void Camera::moveForward(float amount)
+{
+    glm::vec3 direction = glm::normalize(target - getPosition());
+    glm::vec3 delta = direction * amount;
+
+    setPosition(getPosition() + delta);
+    setTarget(target + delta);
+
+    std::cout << "[DEBUG] Moving camera: " << amount << std::endl;
 }

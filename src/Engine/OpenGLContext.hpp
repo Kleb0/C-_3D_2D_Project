@@ -21,6 +21,10 @@ public:
 
     void add(ThreeDObject &object);
     void setCamera(Camera *cam) { camera = cam; }
+    Camera *getCamera() const { return camera; }
+
+    const glm::mat4 &getViewMatrix() const { return viewMatrix; }
+    const glm::mat4 &getProjectionMatrix() const { return projMatrix; }
 
 private:
     glm::mat4 viewMatrix = glm::mat4(1.0f);

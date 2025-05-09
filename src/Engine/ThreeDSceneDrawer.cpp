@@ -87,20 +87,13 @@ void ThreeDSceneDrawer::add(ThreeDObject &object)
     objects.push_back(&object);
 }
 
-void ThreeDSceneDrawer::render()
+void ThreeDSceneDrawer::render(const glm::mat4 &viewProj)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_DEPTH_TEST);
     drawBackgroundGradient();
     glEnable(GL_DEPTH_TEST);
-
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(5.0f, 10.0f, 10.0f),
-        glm::vec3(2.5f, 0.0f, 2.5f),
-        glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
-    glm::mat4 viewProj = proj * view;
 
     glUseProgram(shaderProgram);
     unsigned int viewProjLoc = glGetUniformLocation(shaderProgram, "viewProj");

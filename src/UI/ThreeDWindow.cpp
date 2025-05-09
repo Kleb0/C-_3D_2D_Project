@@ -35,11 +35,10 @@ ThreeDWindow &ThreeDWindow::add(ThreeDObject &object)
 
 void ThreeDWindow::handleClick()
 {
-    double mouseX, mouseY;
-    glfwGetCursorPos(glfwWindow, &mouseX, &mouseY);
+    ImVec2 mouse = ImGui::GetMousePos();
+    float relativeMouseX = mouse.x - oglChildPos.x;
+    float relativeMouseY = mouse.y - oglChildPos.y;
 
-    float relativeMouseX = mouseX - oglChildPos.x;
-    float relativeMouseY = mouseY - oglChildPos.y;
     relativeMouseY = oglChildSize.y - relativeMouseY;
 
     if (relativeMouseX >= 0 && relativeMouseX <= oglChildSize.x &&
@@ -48,14 +47,8 @@ void ThreeDWindow::handleClick()
         int windowWidth = openGLContext->getWidth();
         int windowHeight = openGLContext->getHeight();
 
-        view = glm::lookAt(
-            glm::vec3(5.0f, 10.0f, 10.0f),
-            glm::vec3(2.5f, 0.0f, 2.5f),
-            glm::vec3(0.0f, 1.0f, 0.0f));
-
-        proj = glm::perspective(glm::radians(45.0f),
-                                (float)windowWidth / (float)windowHeight,
-                                0.1f, 100.0f);
+        view = openGLContext->getViewMatrix();
+        proj = openGLContext->getProjectionMatrix();
 
         bool preventSelection = Similigizmo.hasTarget() && ImGuizmo::IsOver();
 
@@ -168,6 +161,19 @@ void ThreeDWindow::threeDRendering()
     {
         ImGui::GetCurrentWindow()->Flags |= ImGuiWindowFlags_NoMove;
         handleClick();
+    }
+
+    if (ImGui::IsWindowHovered())
+    {
+        float wheel = ImGui::GetIO().MouseWheel;
+        if (wheel != 0.0f && openGLContext)
+        {
+            Camera *cam = dynamic_cast<Camera *>(openGLContext->getCamera());
+            if (cam && cam->isSoftwareCamera())
+            {
+                cam->moveForward(wheel * 0.5f);
+            }
+        }
     }
 
     if (selector.getSelectedObject() != nullptr)
